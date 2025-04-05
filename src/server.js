@@ -2,11 +2,12 @@ import express from "express";
 import cors from "cors";
 import pino from "pino-http";
 
-import { getMovies, getMovieById } from "./services/movies.js";
+import { getContacts, getContactsById } from "./services/contacts.js";
 
 import { getEnvVar } from "./utils/getEnvVar.js";
+import mongoose from "mongoose";
 
-export const startServer = () => {
+export const setupServer = () => {
   const app = express();
   app.use(cors());
   app.use(express.json());
@@ -18,31 +19,40 @@ export const startServer = () => {
     })
   );
 
-  app.get("/api/movies", async (req, res) => {
-    const data = await getMovies();
+  app.get("/api/contacts", async (req, res) => {
+    const data = await getContacts();
     res.json({
       status: 200,
-      message: "Successfully find movies",
+      message: "Successfully find contacts",
       data,
     });
   });
 
-  app.get("/api/movies/:id", async (req, res) => {
-    const { id } = req.params;
-    const data = await getMovieById(id);
+  app.get("/api/contacts/:id", async (req, res, next) => {
+    try {
+      const { id } = req.params;
 
-    if (!data) {
-      return res.status(404).json({
-        status: 404,
-        message: `Movie with id=${id} not found`,
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res
+          .status(400)
+          .json({ status: 400, message: "Invalid contact ID format" });
+      }
+
+      const data = await getContactsById(id);
+      if (!data) {
+        return res
+          .status(404)
+          .json({ status: 404, message: "Contact not found" });
+      }
+
+      res.json({
+        status: 200,
+        message: `Successfully found contact with id=${id}`,
+        data,
       });
+    } catch (error) {
+      next(error);
     }
-
-    res.json({
-      status: 200,
-      message: `Successfully find movie with id=${id}`,
-      data,
-    });
   });
 
   app.use((req, res) => {
@@ -57,7 +67,7 @@ export const startServer = () => {
     });
   });
 
-  const port = Number(getEnvVar("PORT", 3000));
+  const port = Number(getEnvVar("PORT", 4000));
 
-  app.listen(port, () => console.log(`Server running on ${port} port`));
+  app.listen(port, () => console.log(`Server is running on port ${port}`));
 };
