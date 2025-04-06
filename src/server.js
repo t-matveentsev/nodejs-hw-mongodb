@@ -19,13 +19,17 @@ export const setupServer = () => {
     })
   );
 
-  app.get("/contacts", async (req, res) => {
-    const data = await getContacts();
-    res.json({
-      status: 200,
-      message: "Successfully find contacts",
-      data,
-    });
+  app.get("/contacts", async (req, res, next) => {
+    try {
+      const data = await getContacts();
+      res.json({
+        status: 200,
+        message: "Successfully find contacts",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
   });
 
   app.get("/contacts/:id", async (req, res, next) => {
