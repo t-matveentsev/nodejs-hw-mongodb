@@ -9,12 +9,17 @@ import {
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { contactsSortFields } from "../db/models/Contacts.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
+import { parsContactFilterParams } from "../utils/filters/parseContactsFilterParam.js";
 
 export const getContactsController = async (req, res) => {
   const paginationParams = parsePaginationParams(req.query);
   const sortParams = parseSortParams(req.query, contactsSortFields);
-
-  const data = await getContacts({ ...paginationParams, ...sortParams });
+  const filters = parsContactFilterParams(req.query);
+  const data = await getContacts({
+    ...paginationParams,
+    ...sortParams,
+    filters,
+  });
   res.json({
     status: 200,
     message: "Successfully find contacts",
