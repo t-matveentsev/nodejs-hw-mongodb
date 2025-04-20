@@ -10,6 +10,9 @@ export const contactsCreateSchema = Joi.object({
     "any.required": "Field phone is required.",
     "string.base": "Phone must be a string.",
   }),
+  email: Joi.string().email().min(3).max(20).messages({
+    "string.email": "Email must be a valid email address.",
+  }),
   isFavorite: Joi.boolean().messages({
     "boolean.base": "isFavorite field must be of type boolean.",
   }),
@@ -31,6 +34,9 @@ export const contactsUpdateSchema = Joi.object({
   }),
   phoneNumber: Joi.string().min(3).max(20).messages({
     "string.base": "Phone must be a string.",
+  }),
+  email: Joi.string().email().min(3).max(20).messages({
+    "string.email": "Email must be a valid email address.",
   }),
   isFavorite: Joi.boolean().messages({
     "boolean.base": "isFavorite field must be of type boolean.",
