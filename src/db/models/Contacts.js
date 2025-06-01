@@ -6,7 +6,7 @@ const contactsSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
     },
     phoneNumber: {
       type: String,
@@ -24,6 +24,11 @@ const contactsSchema = new Schema(
       type: String,
       enum: typeContacts,
       default: typeContacts[0],
+      required: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
       required: true,
     },
   },
